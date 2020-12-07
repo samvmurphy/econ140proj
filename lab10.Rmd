@@ -1,0 +1,116 @@
+---
+title: "Econ 140 Project Cde"
+author: "Sam M., Cam W., Evan L."
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+medals = read.csv('/Users/samuelmurphy/Downloads/Summer-Olympic-medals-1976-to-2008.csv')
+
+medals = medals %>%
+  filter(Year == 2008)
+medals1 = medals[,c(3,12,10,9)]
+medals
+write.csv(medals1,"/Users/samuelmurphy/Downloads/Summer-Olympic-medals-1976-to-2008.csv", row.names = TRUE)
+
+gdp = read.csv('/Users/samuelmurphy/Downloads/gdp-per-capita-worldbank (1).csv')
+gdp
+gdp2008 = gdp %>%
+  filter(Year == 2008)
+gdp2012 = gdp %>%
+  filter(Year == 2012)
+gdp2016 = gdp %>%
+  filter(Year == 2016)
+
+x = gdp2008 %>%
+  filter(Code == 'USA')
+gdp2008$Year = as.factor(gdp2008$Year)
+gdp2008
+
+
+olympic_year_gdp = rbind(gdp2008, gdp2012)
+olympic_year_gdp = rbind(olympic_year_gdp, gdp2016)
+olympic_year_gdp = olympic_year_gdp[!(olympic_year_gdp$Entity == 'World'| olympic_year_gdp$Entity == 'Arab World'|olympic_year_gdp$Entity == 'Caribbean small states'|olympic_year_gdp$Entity == 'Central Europe and the Baltics'|olympic_year_gdp$Entity == '	East Asia & Pacific (IDA & IBRD)'|olympic_year_gdp$Entity == 'Euro area'|olympic_year_gdp$Entity == 'Europe & Central Asia'|olympic_year_gdp$Entity == '	Europe & Central Asia (excluding high income)'|olympic_year_gdp$Entity == '	European Union'|olympic_year_gdp$Entity == 'Fragile and conflict affected situations'|olympic_year_gdp$Entity == 'Heavily indebted poor countries (HIPC)'|olympic_year_gdp$Entity == 'World'|olympic_year_gdp$Entity == 'World'|olympic_year_gdp$Entity == 'World'|olympic_year_gdp$Entity == 'World'|olympic_year_gdp$Entity == 'World'|olympic_year_gdp$Entity == 'World'|olympic_year_gdp$Entity == 'World'|olympic_year_gdp$Entity == 'World'|olympic_year_gdp$Entity == 'World'|olympic_year_gdp$Entity == 'World'|olympic_year_gdp$Entity == 'World'|olympic_year_gdp$Entity == 'World'|olympic_year_gdp$Entity == 'World'|olympic_year_gdp$Entity == 'World'|olympic_year_gdp$Entity == 'World'|olympic_year_gdp$Entity == 'World'|olympic_year_gdp$Entity == 'South Asia'|olympic_year_gdp$Entity == 'Sub-Saharan Africa (excluding high income)'|olympic_year_gdp$Entity == 'Upper middle income'),]
+olympic_year_gdp = olympic_year_gdp[!(olympic_year_gdp$Code == ''),]
+olympic_year_gdp
+write.csv(olympic_year_gdp,"/Users/samuelmurphy/Downloads/gdp-per-capita-worldbank (1).csv", row.names = TRUE)
+
+
+df = read.csv('/Users/samuelmurphy/Downloads/Medals_gdppc_milexp_pop_health.csv')
+df1 = df[,-c(1,3,4,5)]
+df1$pop = df1$pop / 1000000
+df1$gdppc = df1$gdppc / 10000
+#Omitted country name, country tag, and year
+#df1
+full_lm_with_log= lm(log(medals)~ gdppc  + pop+ health_exp, data = df1)
+#par(mfrow = c(2,2))
+#plot(full_lm_with_log)
+summary(full_lm_with_log)
+df1
+
+full_lm_without_log = lm(medals ~ . , data = df1)
+par(mfrow = c(2,2))
+plot(full_lm_without_log)
+summary(lm1)
+
+lm_only_gdppc = lm(medals ~ gdppc, data = df1)
+summary(lm_only_gdppc)
+par(mfrow = c(2,2))
+plot(lm_only_health_exp)
+#for a 1 million person increase in population, you get a .2% increase in medal count.
+
+#for a 10,000 dollar increase(in 2011 dollars), we would expect a 0.00149% increase in a country's medal count.
+
+# for a 1% increase in military spending, we would expect a 0.0908% decrease in a county's medal count. (To be noted, this value is not statistically significant with a p-value of 19%)
+
+# For a 1% increase in health care expenditure, we would expect a 0.2419% increase in a country's medal count.
+
+#df %>%
+#  filter(health_exp > 9)
+max(df$medals)
+
+stargazer(lm1, out = 'lm_only_gdppc.doc',)
+
+stargazer(lm_only_gdppc,
+ype='html',out="lm_only_gdppc.doc",title="Results",align=TRUE)
+
+
+require(leaps)
+regsub_out = regsubsets(x=df1[,-1] , y= df1[,1] )
+summary(regsub_out)
+
+summary(df)
+df %>%
+  filter(health_exp > 9)
+cor(df$gdppc, df$health_exp)
+
+
+
+
+
+
+--------------------
+  
+  
+df = read.csv('/Users/samuelmurphy/Downloads/Medals_gdppc_milexp_pop_health.csv')
+df1 = df[,-c(1,3,4,5)]
+df1$pop = df1$pop / 1000000
+df1$gdppc = df1$gdppc / 10000
+full_lm_with_log= lm(log(medals)~ gdppc  + pop+ health_exp+mil_exp, data = df1)
+summary(full_lm_with_log)
+
+lm_with_only_gdppc = lm(medals ~ gdppc, data = df1)
+summary(lm_with_only_gdppc)
+plot(lm_with_only_gdppc)
+df1
+df1
+
+sum(head(arrange(df, desc(medals)), sqrt(length(df$medals)))$medals)
+sum(df$medals)
+sqrt(length(df$medals))
+```
+
